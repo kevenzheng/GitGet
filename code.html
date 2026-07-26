@@ -16,231 +16,230 @@
     <!-- Custom Purple Theme CSS -->
     <link rel="stylesheet" href="style.css" />
   </head>
-</html>
-
-<body
-  class="bg-[#FAF8F5] text-slate-900 min-h-screen p-4 font-sans flex flex-col items-center justify-start"
->
-  <div class="max-w-md w-full space-y-5 my-4">
-    <!-- MAIN HEADER -->
-    <div
-      class="bg-white p-4 rounded-xl border border-purple-200 flex justify-between items-center shadow-md"
-    >
-      <div>
-        <h1 class="text-lg font-bold text-[#7C22F6]">📖 Digital Study Diary</h1>
-        <p class="text-xs text-slate-500">Smart Academic Assistant</p>
-      </div>
+  <body
+    class="bg-[#FAF8F5] text-slate-900 min-h-screen p-4 font-sans flex flex-col items-center justify-start"
+  >
+    <div class="max-w-md w-full space-y-5 my-4">
+      <!-- MAIN HEADER -->
       <div
-        class="text-right bg-[#FAF8F5] px-3 py-1.5 rounded-lg border border-purple-200"
+        class="bg-white p-4 rounded-xl border border-purple-200 flex justify-between items-center shadow-md"
       >
-        <span class="text-[10px] text-slate-500 block uppercase font-bold"
-          >🔥 Streak</span
+        <div>
+          <h1 class="text-lg font-bold text-[#7C22F6]">
+            📖 Digital Study Diary
+          </h1>
+          <p class="text-xs text-slate-500">Smart Academic Assistant</p>
+        </div>
+        <div
+          class="text-right bg-[#FAF8F5] px-3 py-1.5 rounded-lg border border-purple-200"
         >
-        <span id="streakDisplay" class="text-sm font-extrabold text-amber-600"
-          >5 Days</span
-        >
+          <span class="text-[10px] text-slate-500 block uppercase font-bold"
+            >🔥 Streak</span
+          >
+          <span id="streakDisplay" class="text-sm font-extrabold text-amber-600"
+            >5 Days</span
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- NAVIGATION TABS -->
+<div
+  class="flex border-b border-purple-200 text-xs font-semibold text-center text-slate-500 bg-white rounded-xl p-1 shadow-sm"
+>
+  <button
+    onclick="setTab('parse')"
+    id="btn-parse"
+    class="w-1/3 py-2 rounded-lg transition text-[#7C22F6] font-bold bg-purple-50"
+  >
+    1. Parse Slides
+  </button>
+  <button
+    onclick="setTab('gpa')"
+    id="btn-gpa"
+    class="w-1/3 py-2 rounded-lg transition hover:text-slate-900"
+  >
+    2. GPA Tracker
+  </button>
+  <button
+    onclick="setTab('goals')"
+    id="btn-goals"
+    class="w-1/3 py-2 rounded-lg transition hover:text-slate-900"
+  >
+    3. Daily Goals
+  </button>
+</div>
+
+<!-- TAB 1: AI SLIDE PARSER & MANUAL ENTRY -->
+<div
+  id="tab-view-parse"
+  class="space-y-4 bg-white p-4 rounded-xl border border-purple-200 shadow-md"
+>
+  <h2 class="text-sm font-bold text-slate-900">
+    📅 AI Workload Organizer & Manual Entry
+  </h2>
+  <p class="text-xs text-slate-500">
+    Upload lecture slides for AI extraction, or use manual entry below.
+  </p>
+
+  <form id="uploadForm" class="space-y-3">
+    <input
+      type="file"
+      id="slideFile"
+      accept=".pdf"
+      class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-purple-100 file:text-[#7C22F6] hover:file:bg-purple-200 border border-purple-200 rounded-lg p-1 bg-[#FAF8F5] cursor-pointer"
+    />
+    <div class="flex space-x-2">
+      <button
+        type="submit"
+        class="w-1/2 bg-[#7C22F6] hover:bg-[#6819D4] text-white font-semibold py-2 rounded-lg text-xs transition shadow-sm"
+      >
+        Analyze with AI
+      </button>
+      <button
+        type="button"
+        onclick="toggleManualEntry()"
+        class="w-1/2 bg-[#FAF8F5] hover:bg-purple-50 text-[#7C22F6] font-semibold py-2 rounded-lg text-xs transition border border-purple-200"
+      >
+        ✏️ Manual Entry
+      </button>
+    </div>
+  </form>
+
+  <div
+    id="spinner"
+    class="hidden text-center py-4 text-xs text-slate-500 animate-pulse"
+  >
+    🤖 AI is analyzing tables and slide structures...
+  </div>
+
+  <div
+    id="resultsCard"
+    class="hidden space-y-3 pt-3 border-t border-purple-200"
+  >
+    <div class="flex justify-between items-center">
+      <label class="text-xs text-slate-500 font-semibold"
+        >Module Code & Freq:</label
+      >
+      <div class="flex space-x-2">
+        <input
+          type="text"
+          id="moduleInput"
+          placeholder="e.g. C240"
+          class="bg-[#FAF8F5] text-[#7C22F6] text-xs font-bold font-mono px-2 py-1 rounded border border-purple-200 w-20 text-center focus:outline-none focus:border-[#7C22F6]"
+        />
+        <input
+          type="number"
+          id="freqInput"
+          value="3"
+          min="1"
+          max="30"
+          title="Reminder Frequency (Days)"
+          class="bg-[#FAF8F5] text-amber-600 text-xs font-bold font-mono px-2 py-1 rounded border border-purple-200 w-16 text-center focus:outline-none focus:border-[#7C22F6]"
+        />
       </div>
     </div>
 
-    <!-- NAVIGATION TABS -->
-    <div
-      class="flex border-b border-purple-200 text-xs font-semibold text-center text-slate-500 bg-white rounded-xl p-1 shadow-sm"
+    <div id="assessmentsList" class="space-y-2"></div>
+
+    <button
+      type="button"
+      onclick="addAssessmentRow()"
+      class="w-full py-1.5 border border-dashed border-purple-300 text-slate-500 hover:text-slate-900 hover:border-[#7C22F6] text-xs rounded-lg transition"
     >
-      <button
-        onclick="setTab('parse')"
-        id="btn-parse"
-        class="w-1/3 py-2 rounded-lg transition text-[#7C22F6] font-bold bg-purple-50"
+      + Add Assessment Component
+    </button>
+    <button
+      type="button"
+      onclick="saveEditedSchedule()"
+      class="w-full bg-[#7C22F6] hover:bg-[#6819D4] text-white text-xs font-semibold py-2 rounded-lg transition shadow-sm"
+    >
+      Confirm & Save Schedule
+    </button>
+  </div>
+
+  <div
+    id="statusMsg"
+    class="hidden text-center text-xs font-semibold py-1 text-[#7C22F6]"
+  ></div>
+</div>
+
+<!-- TAB 2: GPA TRACKER & CALCULATOR -->
+<div
+  id="tab-view-gpa"
+  class="hidden space-y-4 bg-white p-4 rounded-xl border border-purple-200 shadow-md"
+>
+  <!-- CUMULATIVE GPA DISPLAY -->
+  <div
+    class="bg-[#FAF8F5] p-4 rounded-lg border border-purple-200 text-center space-y-1 relative"
+  >
+    <div class="flex justify-center items-center space-x-2">
+      <span
+        class="text-[10px] text-[#7C22F6] font-bold uppercase tracking-wider"
       >
-        1. Parse Slides
-      </button>
+        CUMULATIVE GPA (CREDIT-WEIGHTED)
+      </span>
       <button
-        onclick="setTab('gpa')"
-        id="btn-gpa"
-        class="w-1/3 py-2 rounded-lg transition hover:text-slate-900"
+        onclick="manualRefreshGpa()"
+        class="text-xs bg-white hover:bg-purple-50 text-[#7C22F6] px-2 py-0.5 rounded border border-purple-200 transition"
+        title="Fetch latest from Google Sheets"
       >
-        2. GPA Tracker
-      </button>
-      <button
-        onclick="setTab('goals')"
-        id="btn-goals"
-        class="w-1/3 py-2 rounded-lg transition hover:text-slate-900"
-      >
-        3. Daily Goals
+        🔄 Sync
       </button>
     </div>
 
-    <!-- TAB 1: AI SLIDE PARSER & MANUAL ENTRY -->
-    <div
-      id="tab-view-parse"
-      class="space-y-4 bg-white p-4 rounded-xl border border-purple-200 shadow-md"
-    >
-      <h2 class="text-sm font-bold text-slate-900">
-        📅 AI Workload Organizer & Manual Entry
-      </h2>
-      <p class="text-xs text-slate-500">
-        Upload lecture slides for AI extraction, or use manual entry below.
-      </p>
+    <div id="cumGpaDisplay" class="text-3xl font-black text-[#7C22F6]">
+      0.000
+    </div>
 
-      <form id="uploadForm" class="space-y-3">
-        <input
-          type="file"
-          id="slideFile"
-          accept=".pdf"
-          class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-purple-100 file:text-[#7C22F6] hover:file:bg-purple-200 border border-purple-200 rounded-lg p-1 bg-[#FAF8F5] cursor-pointer"
-        />
-        <div class="flex space-x-2">
-          <button
-            type="submit"
-            class="w-1/2 bg-[#7C22F6] hover:bg-[#6819D4] text-white font-semibold py-2 rounded-lg text-xs transition shadow-sm"
-          >
-            Analyze with AI
-          </button>
-          <button
-            type="button"
-            onclick="toggleManualEntry()"
-            class="w-1/2 bg-[#FAF8F5] hover:bg-purple-50 text-[#7C22F6] font-semibold py-2 rounded-lg text-xs transition border border-purple-200"
-          >
-            ✏️ Manual Entry
-          </button>
-        </div>
-      </form>
+    <p class="text-[10px] text-slate-500">
+      Calculated using total grade points ÷ total credit units
+    </p>
+  </div>
+
+  <!-- VISUAL GPA PROGRESS GRAPH -->
+  <div class="bg-[#FAF8F5] p-3 rounded-lg border border-purple-200 space-y-2">
+    <span
+      class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block"
+      >📈 Semester GPA Trend</span
+    >
+    <div class="w-full h-36">
+      <canvas id="gpaTrendChart"></canvas>
     </div>
   </div>
+
+  <!-- CARDS HEADER WITH '+' BUTTON -->
+  <div class="flex justify-between items-center pt-1">
+    <h3 class="text-xs font-bold text-slate-700">Academic Years</h3>
+    <button
+      onclick="addYearCard()"
+      class="bg-[#7C22F6] hover:bg-[#6819D4] text-white w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center transition shadow-sm"
+      title="Add Academic Year"
+    >
+      +
+    </button>
+  </div>
+
+  <!-- DYNAMIC YEAR CARDS CONTAINER -->
+  <div id="cardsContainer" class="space-y-3"></div>
+
+  <!-- SAVE TO GSHEETS -->
+  <div class="pt-2">
+    <button
+      onclick="syncGpaToSheet()"
+      class="w-full bg-[#7C22F6] hover:bg-[#6819D4] text-white font-semibold py-2 rounded-lg text-xs transition shadow-sm"
+    >
+      💾 Save GPA to Google Sheets
+    </button>
+  </div>
+
   <div
-          id="spinner"
-          class="hidden text-center py-4 text-xs text-slate-500 animate-pulse"
-        >
-          🤖 AI is analyzing tables and slide structures...
-        </div>
-
-        <div
-          id="resultsCard"
-          class="hidden space-y-3 pt-3 border-t border-purple-200"
-        >
-          <div class="flex justify-between items-center">
-            <label class="text-xs text-slate-500 font-semibold"
-              >Module Code & Freq:</label
-            >
-            <div class="flex space-x-2">
-              <input
-                type="text"
-                id="moduleInput"
-                placeholder="e.g. C240"
-                class="bg-[#FAF8F5] text-[#7C22F6] text-xs font-bold font-mono px-2 py-1 rounded border border-purple-200 w-20 text-center focus:outline-none focus:border-[#7C22F6]"
-              />
-              <input
-                type="number"
-                id="freqInput"
-                value="3"
-                min="1"
-                max="30"
-                title="Reminder Frequency (Days)"
-                class="bg-[#FAF8F5] text-amber-600 text-xs font-bold font-mono px-2 py-1 rounded border border-purple-200 w-16 text-center focus:outline-none focus:border-[#7C22F6]"
-              />
-            </div>
-          </div>
-
-          <div id="assessmentsList" class="space-y-2"></div>
-
-          <button
-            type="button"
-            onclick="addAssessmentRow()"
-            class="w-full py-1.5 border border-dashed border-purple-300 text-slate-500 hover:text-slate-900 hover:border-[#7C22F6] text-xs rounded-lg transition"
-          >
-            + Add Assessment Component
-          </button>
-          <button
-            type="button"
-            onclick="saveEditedSchedule()"
-            class="w-full bg-[#7C22F6] hover:bg-[#6819D4] text-white text-xs font-semibold py-2 rounded-lg transition shadow-sm"
-          >
-            Confirm & Save Schedule
-          </button>
-        </div>
-
-        <div
-          id="statusMsg"
-          class="hidden text-center text-xs font-semibold py-1 text-[#7C22F6]"
-        ></div>
-      </div>
-
-      <!-- TAB 2: GPA TRACKER & CALCULATOR -->
-      <div
-        id="tab-view-gpa"
-        class="hidden space-y-4 bg-white p-4 rounded-xl border border-purple-200 shadow-md"
-      >
-        <!-- CUMULATIVE GPA DISPLAY -->
-        <div
-          class="bg-[#FAF8F5] p-4 rounded-lg border border-purple-200 text-center space-y-1 relative"
-        >
-          <div class="flex justify-center items-center space-x-2">
-            <span
-              class="text-[10px] text-[#7C22F6] font-bold uppercase tracking-wider"
-            >
-              CUMULATIVE GPA (CREDIT-WEIGHTED)
-            </span>
-            <button
-              onclick="manualRefreshGpa()"
-              class="text-xs bg-white hover:bg-purple-50 text-[#7C22F6] px-2 py-0.5 rounded border border-purple-200 transition"
-              title="Fetch latest from Google Sheets"
-            >
-              🔄 Sync
-            </button>
-          </div>
-
-          <div id="cumGpaDisplay" class="text-3xl font-black text-[#7C22F6]">
-            0.000
-          </div>
-
-          <p class="text-[10px] text-slate-500">
-            Calculated using total grade points ÷ total credit units
-          </p>
-        </div>
-
-        <!-- VISUAL GPA PROGRESS GRAPH -->
-        <div
-          class="bg-[#FAF8F5] p-3 rounded-lg border border-purple-200 space-y-2"
-        >
-          <span
-            class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block"
-            >📈 Semester GPA Trend</span
-          >
-          <div class="w-full h-36">
-            <canvas id="gpaTrendChart"></canvas>
-          </div>
-        </div>
-
-        <!-- CARDS HEADER WITH '+' BUTTON -->
-        <div class="flex justify-between items-center pt-1">
-          <h3 class="text-xs font-bold text-slate-700">Academic Years</h3>
-          <button
-            onclick="addYearCard()"
-            class="bg-[#7C22F6] hover:bg-[#6819D4] text-white w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center transition shadow-sm"
-            title="Add Academic Year"
-          >
-            +
-          </button>
-        </div>
-
-        <!-- DYNAMIC YEAR CARDS CONTAINER -->
-        <div id="cardsContainer" class="space-y-3"></div>
-
-        <!-- SAVE TO GSHEETS -->
-        <div class="pt-2">
-          <button
-            onclick="syncGpaToSheet()"
-            class="w-full bg-[#7C22F6] hover:bg-[#6819D4] text-white font-semibold py-2 rounded-lg text-xs transition shadow-sm"
-          >
-            💾 Save GPA to Google Sheets
-          </button>
-        </div>
-
-        <div
-          id="gpaStatusNotice"
-          class="hidden text-center text-xs font-semibold py-1 text-[#7C22F6]"
-        ></div>
-      </div>
-      <!-- TAB 3: GAMIFIED GOALS & CIRCULAR TIMER -->
+    id="gpaStatusNotice"
+    class="hidden text-center text-xs font-semibold py-1 text-[#7C22F6]"
+  ></div>
+</div>
+<!-- TAB 3: GAMIFIED GOALS & CIRCULAR TIMER -->
       <div
         id="tab-view-goals"
         class="hidden space-y-4 bg-white p-4 rounded-xl border border-purple-200 shadow-md"
@@ -452,15 +451,15 @@
 
     <script>
       const SCAN_URL =
-        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/scan-slides";
+        "https://gitget-qmra.onrender.com/webhook/scan-slides";
       const SAVE_GPA_URL =
-        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/save-gpa";
+        "https://gitget-qmra.onrender.com/webhook/save-gpa";
       const GET_GPA_URL =
-        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/get-gpa";
+        "https://gitget-qmra.onrender.com/webhook/get-gpa";
       const SAVE_SCHEDULE_URL =
-        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/save-schedule";
+        "https://gitget-qmra.onrender.com/webhook/save-schedule";
       const UPDATE_STREAK_URL =
-        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/update-streak";
+        "https://gitget-qmra.onrender.com/webhook/update-streak";
 
       const urlParams = new URLSearchParams(window.location.search);
       const chatId = urlParams.get("chat_id") || "123456";
@@ -1127,4 +1126,3 @@
     </script>
   </body>
 </html>
-</body>

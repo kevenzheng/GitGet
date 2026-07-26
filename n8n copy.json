@@ -157,7 +157,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.chat_id }}",
-        "text": "=📚 <b>Digital Study Diary Dashboard</b>\n\nWelcome back, {{ $json.first_name }}! 👋\n\nUse your diary app to:\n- 📅 Auto-parse slide deadlines with Native AI\n- 📊 View GPA & milestone metrics\n- ⚡ Manage study goals & streaks\n\n👉 <a href=\"https://your-app-name.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\"><b>Open Study Diary</b></a>",
+        "text": "=📚 <b>Digital Study Diary Dashboard</b>\n\nWelcome back, {{ $json.first_name }}! 👋\n\nUse your diary app to:\n- 📅 Auto-parse slide deadlines with Native AI\n- 📊 View GPA & milestone metrics\n- ⚡ Manage study goals & streaks\n\n👉 <a href=\"https://gitget-qmra.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\"><b>Open Study Diary</b></a>",
         "additionalFields": {
           "parse_mode": "HTML"
         }
@@ -361,7 +361,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.chat_id }}",
-        "text": "=⏰ <b>Daily Study Nudge!</b>\n\nHey {{ $json.first_name || 'Student' }}, don't break your study streak today!\n\nCheck your upcoming deadlines and complete today's 25-minute focus session:\n👉 <a href=\"https://your-app-name.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\">Open Study Diary</a>",
+        "text": "=⏰ <b>Daily Study Nudge!</b>\n\nHey {{ $json.first_name || 'Student' }}, don't break your study streak today!\n\nCheck your upcoming deadlines and complete today's 25-minute focus session:\n👉 <a href=\"https://gitget-qmra.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\">Open Study Diary</a>",
         "additionalFields": {
           "parse_mode": "HTML"
         }
