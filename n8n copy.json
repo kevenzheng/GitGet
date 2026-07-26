@@ -1,0 +1,1401 @@
+{
+  "name": "Digital Study Diary - Native AI Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        28320,
+        12864
+      ],
+      "id": "0cab736e-3646-41e3-a772-eda86c183172",
+      "name": "Telegram Trigger",
+      "webhookId": "2aec6cab-eaf2-4961-b7e4-10d1e8bd3767",
+      "credentials": {
+        "telegramApi": {
+          "id": "OitsCOU4HxkYQFLM",
+          "name": "GitGet Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "chat_id",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "first_name",
+              "name": "first_name",
+              "value": "={{ $json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "username",
+              "name": "username",
+              "value": "={{ $json.message.from.username || 'N/A' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        28544,
+        12864
+      ],
+      "id": "7d7fbbec-f072-4a67-8e62-67a0d4a72abf",
+      "name": "Extract User Info"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "User details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ping_frequency_days",
+              "displayName": "ping_frequency_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_pinged_at",
+              "displayName": "last_pinged_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28768,
+        12864
+      ],
+      "id": "2a298312-5c24-42d5-b705-98fe82f7c956",
+      "name": "Sync User to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=📚 <b>Digital Study Diary Dashboard</b>\n\nWelcome back, {{ $json.first_name }}! 👋\n\nUse your diary app to:\n- 📅 Auto-parse slide deadlines with Native AI\n- 📊 View GPA & milestone metrics\n- ⚡ Manage study goals & streaks\n\n👉 <a href=\"https://your-app-name.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\"><b>Open Study Diary</b></a>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        28992,
+        12864
+      ],
+      "id": "75038be0-c629-4a85-8ac9-0c435392bda3",
+      "name": "Send Welcome Nudge",
+      "webhookId": "86ef0c2a-e79d-4b31-8ef0-da880a98bcbb",
+      "credentials": {
+        "telegramApi": {
+          "id": "OitsCOU4HxkYQFLM",
+          "name": "GitGet Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "study-diary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        13104
+      ],
+      "id": "1a8a7a5b-70e0-41a2-aa38-ec84cdf81d14",
+      "name": "Diary Webhook",
+      "webhookId": "7ce40dcd-12b1-4f65-b4b9-b5503935ba4d"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!-- Frontend HTML Placeholder - Managed separately -->",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        28544,
+        13104
+      ],
+      "id": "1524216f-af11-4f6e-806f-6448a366fcbd",
+      "name": "Render Study Diary UI"
+    },
+    {
+      "parameters": {
+        "path": "get-gpa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        14016
+      ],
+      "id": "ae57bf0e-b46f-4dda-9813-658cf2dd9c2b",
+      "name": "Get GPA Webhook",
+      "webhookId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1901085887,
+          "mode": "list",
+          "cachedResultName": "GPA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=1901085887"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28544,
+        14016
+      ],
+      "id": "e1b4c70e-76ff-4016-a302-2ce482ee294e",
+      "name": "Fetch Saved GPA Rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let queryChatId = \"\";\ntry {\n  queryChatId = String($('Get GPA Webhook').first().json.query.chat_id || \"\");\n} catch (e) {\n  queryChatId = \"\";\n}\n\nconst allRows = $input.all();\nconst matchedRow = allRows.find(item => {\n  const row = item.json;\n  return String(row.chat_id || \"\").trim() === queryChatId.trim();\n});\n\nif (matchedRow) {\n  return [{\n    json: {\n      cumulative_gpa: String(matchedRow.json.cumulative_gpa || \"0.000\"),\n      state_json: String(matchedRow.json.state_json || \"{}\")\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    cumulative_gpa: \"0.000\",\n    state_json: \"{}\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        28768,
+        14016
+      ],
+      "id": "757c5792-e439-49e3-849e-ab4316753631",
+      "name": "Filter User Rows"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        28992,
+        14016
+      ],
+      "id": "ad1c8786-ebd3-4a49-be91-3530d7ebc607",
+      "name": "Respond Saved Rows"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        28320,
+        13792
+      ],
+      "id": "278abeca-bed8-4152-a473-765e1f377372",
+      "name": "Daily Nudge Cron"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1901085887,
+          "mode": "list",
+          "cachedResultName": "GPA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=1901085887"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28544,
+        13792
+      ],
+      "id": "f1118cc1-3831-423b-a34b-4423afe16ed1",
+      "name": "Fetch Registered Users",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=⏰ <b>Daily Study Nudge!</b>\n\nHey {{ $json.first_name || 'Student' }}, don't break your study streak today!\n\nCheck your upcoming deadlines and complete today's 25-minute focus session:\n👉 <a href=\"https://your-app-name.onrender.com/webhook/study-diary?chat_id={{ $json.chat_id }}\">Open Study Diary</a>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        28768,
+        13792
+      ],
+      "id": "f71cd93e-0db0-4575-8d5a-0fd8885282c1",
+      "name": "Send Contextual Reminders",
+      "webhookId": "8b2b8b78-ec56-43dd-b205-7b9bf9b2dab2",
+      "credentials": {
+        "telegramApi": {
+          "id": "OitsCOU4HxkYQFLM",
+          "name": "GitGet Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "save-gpa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        13344
+      ],
+      "id": "5d067a00-2713-4af0-8185-1cf42b8900dd",
+      "name": "Save GPA Webhook",
+      "webhookId": "0fdc7913-4461-4a13-be6d-75c68b1f9cdc"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body;\nconst chatId = body.chat_id;\nconst cumulativeGpa = body.cumulative_gpa;\n\nreturn [{\n  json: {\n    row_id: String(chatId),\n    chat_id: String(chatId),\n    cumulative_gpa: String(cumulativeGpa)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        28528,
+        13344
+      ],
+      "id": "a4beb0d8-3b25-4f3b-9a58-78625ffa1620",
+      "name": "Unpack Cumulative GPA"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        28976,
+        13344
+      ],
+      "id": "6fe1728f-925c-4d80-8ddb-788cdad11306",
+      "name": "Respond GPA Saved"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1901085887,
+          "mode": "list",
+          "cachedResultName": "GPA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=1901085887"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "row_id",
+              "displayName": "row_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cumulative_gpa",
+              "displayName": "cumulative_gpa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28752,
+        13344
+      ],
+      "id": "cc4821a3-6a87-47ca-b10d-5f2f55fffdd7",
+      "name": "Append/update to GPA Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const pythonResponse = $input.first().json;\nreturn [{\n  json: {\n    text_content: pythonResponse.text_content || JSON.stringify(pythonResponse)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        28768,
+        13600
+      ],
+      "id": "eae0ad23-6ae7-4cc7-91a5-69bda5aa1523",
+      "name": "Format Python Output"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "scan-slides",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        13600
+      ],
+      "id": "56cee012-8f1e-4a6e-ab0d-bec607407158",
+      "name": "Scan Slides Webhook1",
+      "webhookId": "d2e1caa7-ae35-4f3e-9828-3c6c4484cc5e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5000/convert-slides",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        28544,
+        13600
+      ],
+      "id": "33fd65d2-716b-47f6-90f9-bee2cec1cc65",
+      "name": "Extract Raw Text via Python1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        29360,
+        13600
+      ],
+      "id": "6b80d3f4-8faf-4825-94fc-83461acfada9",
+      "name": "Return Parsed Data1"
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        29024,
+        13808
+      ],
+      "id": "ba55fada-1637-4d78-9c70-221c07c0e597",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "OMvA7fXdTwnRWI8w",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a strict data extraction tool. You must read ONLY the text provided below and output data matching the required schema. Do not use outside knowledge or make up dates.\n\nText to analyze:\n{{ $json.text_content }}\n\nRules:\n1. Extract the module code found in the text (e.g., \"C240\") into the \"module\" field.\n2. EXCLUDE \"SDCL\" completely.\n3. EXCLUDE any assessment that does not have an explicit week or lesson number stated in the text.\n4. Look ONLY for CA1 and CA2 in the text and list each as an object containing its name and week/lesson date inside the \"assessments\" array.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        29024,
+        13616
+      ],
+      "id": "8e17b04c-daa8-4fca-93fe-3a158bb4dc90",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"module\": {\n      \"type\": \"string\"\n    },\n    \"assessments\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"date\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\"name\", \"date\"]\n      }\n    }\n  },\n  \"required\": [\"module\", \"assessments\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        29168,
+        13824
+      ],
+      "id": "3a39ee8a-1e7d-4e03-9a40-a1710f9412ec",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "save-schedule",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        14256
+      ],
+      "id": "5fca13cd-8f73-4cb1-bb66-cff90599a0eb",
+      "name": "Save Schedule Webhook",
+      "webhookId": "schedule-webhook-id-uuid"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst chatId = body.chat_id;\nconst moduleCode = body.module;\nconst semester = body.semester || \"Sem 1\";\nconst freq = body.freq || \"3\";\nconst assessments = body.assessments || [];\n\nlet sheetRows = [];\nlet assessmentText = \"\";\n\nassessments.forEach(a => {\n  sheetRows.push({\n    json: {\n      row_id: `${chatId}_${moduleCode}_${a.name}`,\n      chat_id: String(chatId),\n      \"Module Code\": String(moduleCode),\n      \"Semester\": String(semester),\n      \"Type\": String(a.name),\n      \"Week\": String(a.date),\n      \"Freq (days)\": String(freq),\n      \"Status\": \"pending\"\n    }\n  });\n  assessmentText += `- <b>${a.name}</b> (${a.date}) [Next reminder in ${freq} days]\\n`;\n});\n\nconst formattedText = `📅 <b>Schedule Saved for ${moduleCode}</b>!\\n\\nSaved items:\\n${assessmentText}\\nStatus set to <b>pending</b>.`;\n\nreturn sheetRows.map((r, idx) => ({\n  json: {\n    ...r.json,\n    message_text: idx === 0 ? formattedText : \"\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        28544,
+        14256
+      ],
+      "id": "7c1f85c8-b19d-4f93-9e67-95d6d6aed823",
+      "name": "Format Schedule Text"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 813620417,
+          "mode": "list",
+          "cachedResultName": "GitGet Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=813620417"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Module Code",
+              "displayName": "Module Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Semester",
+              "displayName": "Semester",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Week",
+              "displayName": "Week",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Freq (days)",
+              "displayName": "Freq (days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_id",
+              "displayName": "row_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Module_Code",
+              "displayName": "Module_Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Freq_days",
+              "displayName": "Freq_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_text",
+              "displayName": "message_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28768,
+        14256
+      ],
+      "id": "2445fc65-a637-4f9f-8581-963adbec9055",
+      "name": "Save Schedule to GSheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Format Schedule Text').first().json.chat_id }}",
+        "text": "={{ $('Format Schedule Text').first().json.message_text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        28992,
+        14256
+      ],
+      "id": "38a2549d-4700-452c-8955-66263ba683f0",
+      "name": "Send Schedule Telegram",
+      "webhookId": "d9fe68b6-baca-4d7f-b852-e4b67f5e5596",
+      "credentials": {
+        "telegramApi": {
+          "id": "OitsCOU4HxkYQFLM",
+          "name": "GitGet Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'success' } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        29216,
+        14256
+      ],
+      "id": "2e0cde20-a826-4eaa-a7ef-6ce30d7b07bd",
+      "name": "Respond Schedule Saved"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update-streak",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        28320,
+        14544
+      ],
+      "id": "93d46e74-2669-4985-8591-166cc57fb9f4",
+      "name": "Update Streak Webhook",
+      "webhookId": "streak-webhook-uuid"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 813620417,
+          "mode": "list",
+          "cachedResultName": "GitGet Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=813620417"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28544,
+        14544
+      ],
+      "id": "70e5204c-73f8-4a84-b38c-2db97872e2f5",
+      "name": "Fetch User Streak Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Update Streak Webhook').first().json.body || {};\nconst chatId = String(body.chat_id || \"123456\");\nconst allRows = $input.all();\n\nlet userRow = allRows.find(r => String(r.json.chat_id || \"\").trim() === chatId);\nlet currentStreak = userRow ? parseInt(userRow.json.streak || \"5\", 10) : 5;\nlet lastDate = userRow ? String(userRow.json.last_streak_date || \"\") : \"\";\n\nconst todayStr = new Date().toISOString().split('T')[0];\n\nif (lastDate !== todayStr) {\n  currentStreak += 1;\n  lastDate = todayStr;\n}\n\nreturn [{\n  json: {\n    row_id: chatId,\n    chat_id: chatId,\n    streak: String(currentStreak),\n    last_streak_date: lastDate,\n    updated_streak: currentStreak\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        28768,
+        14544
+      ],
+      "id": "f3592d3e-03af-4a2d-b103-daf26f893f7e",
+      "name": "Calculate Streak Logic"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA",
+          "mode": "list",
+          "cachedResultName": "GitGet"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 813620417,
+          "mode": "list",
+          "cachedResultName": "GitGet Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fGBNhFZRxxnaplCPhy9bWw7ehcqNT23cNvRwZ2DkkUA/edit#gid=813620417"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Module Code",
+              "displayName": "Module Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Semester",
+              "displayName": "Semester",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Week",
+              "displayName": "Week",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Freq (days)",
+              "displayName": "Freq (days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_id",
+              "displayName": "row_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Module_Code",
+              "displayName": "Module_Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Freq_days",
+              "displayName": "Freq_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_text",
+              "displayName": "message_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        28992,
+        14544
+      ],
+      "id": "aa5af918-71d5-4ed3-88e0-d42cfd6085b2",
+      "name": "Save Streak to GSheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PCql24EJCujKOiJs",
+          "name": "GitGet Gsheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { streak: $json.updated_streak } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        29216,
+        14544
+      ],
+      "id": "36d82c7c-f3e2-45e4-b335-8c8b3d82fa2a",
+      "name": "Respond Streak Updated"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract User Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract User Info": {
+      "main": [
+        [
+          {
+            "node": "Sync User to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync User to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Nudge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diary Webhook": {
+      "main": [
+        [
+          {
+            "node": "Render Study Diary UI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GPA Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Saved GPA Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Saved GPA Rows": {
+      "main": [
+        [
+          {
+            "node": "Filter User Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter User Rows": {
+      "main": [
+        [
+          {
+            "node": "Respond Saved Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Nudge Cron": {
+      "main": [
+        [
+          {
+            "node": "Fetch Registered Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Registered Users": {
+      "main": [
+        [
+          {
+            "node": "Send Contextual Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save GPA Webhook": {
+      "main": [
+        [
+          {
+            "node": "Unpack Cumulative GPA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unpack Cumulative GPA": {
+      "main": [
+        [
+          {
+            "node": "Append/update to GPA Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append/update to GPA Sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond GPA Saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Python Output": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scan Slides Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Extract Raw Text via Python1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Raw Text via Python1": {
+      "main": [
+        [
+          {
+            "node": "Format Python Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Return Parsed Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Schedule Webhook": {
+      "main": [
+        [
+          {
+            "node": "Format Schedule Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Schedule Text": {
+      "main": [
+        [
+          {
+            "node": "Save Schedule to GSheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Schedule to GSheet": {
+      "main": [
+        [
+          {
+            "node": "Send Schedule Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Schedule Telegram": {
+      "main": [
+        [
+          {
+            "node": "Respond Schedule Saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Streak Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch User Streak Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch User Streak Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate Streak Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Streak Logic": {
+      "main": [
+        [
+          {
+            "node": "Save Streak to GSheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Streak to GSheet": {
+      "main": [
+        [
+          {
+            "node": "Respond Streak Updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "eb5a49d8-9454-4e8e-b102-24cd54b84a01",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a9e1739c889204167b72f5ec688521d0bb8a646972b4c7f47f17aa8f268db097"
+  },
+  "nodeGroups": [],
+  "id": "GDuZTT0etGZYH4YE",
+  "tags": []
+}

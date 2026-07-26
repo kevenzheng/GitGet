@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital Study Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body class="bg-slate-900 text-slate-100 min-h-screen p-4 font-sans">
+    <div class="max-w-md mx-auto space-y-5">
+      <!-- MAIN HEADER -->
+      <div
+        class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center shadow-lg"
+      >
+        <div>
+          <h1 class="text-lg font-bold text-emerald-400">
+            📖 Digital Study Diary
+          </h1>
+          <p class="text-xs text-slate-400">Smart Academic Assistant</p>
+        </div>
+        <div
+          class="text-right bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700"
+        >
+          <span class="text-[10px] text-slate-400 block uppercase font-bold"
+            >🔥 Streak</span
+          >
+          <span id="streakDisplay" class="text-sm font-extrabold text-amber-400"
+            >5 Days</span
+          >
+        </div>
+      </div>
+
+      <!-- NAVIGATION TABS -->
+      <div
+        class="flex border-b border-slate-700 text-xs font-semibold text-center text-slate-400"
+      >
+        <button
+          onclick="setTab('parse')"
+          id="btn-parse"
+          class="w-1/3 py-2 border-b-2 border-emerald-400 text-emerald-400 font-bold"
+        >
+          1. Parse Slides
+        </button>
+        <button
+          onclick="setTab('gpa')"
+          id="btn-gpa"
+          class="w-1/3 py-2 border-b-2 border-transparent hover:text-slate-200"
+        >
+          2. GPA Tracker
+        </button>
+        <button
+          onclick="setTab('goals')"
+          id="btn-goals"
+          class="w-1/3 py-2 border-b-2 border-transparent hover:text-slate-200"
+        >
+          3. Daily Goals
+        </button>
+      </div>
+
+      <!-- TAB 1: AI SLIDE PARSER & MANUAL ENTRY -->
+      <div
+        id="tab-view-parse"
+        class="space-y-4 bg-slate-800 p-4 rounded-xl border border-slate-700"
+      >
+        <h2 class="text-sm font-bold text-slate-200">
+          📅 AI Workload Organizer & Manual Entry
+        </h2>
+        <p class="text-xs text-slate-400">
+          Upload lecture slides for AI extraction, or use manual entry below.
+        </p>
+
+        <form id="uploadForm" class="space-y-3">
+          <input
+            type="file"
+            id="slideFile"
+            accept=".pdf"
+            class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 border border-slate-700 rounded-lg p-1 bg-slate-900 cursor-pointer"
+          />
+          <div class="flex space-x-2">
+            <button
+              type="submit"
+              class="w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-xs transition"
+            >
+              Analyze with AI
+            </button>
+            <button
+              type="button"
+              onclick="toggleManualEntry()"
+              class="w-1/2 bg-slate-700 hover:bg-slate-600 text-emerald-400 font-semibold py-2 rounded-lg text-xs transition border border-slate-600"
+            >
+              ✏️ Manual Entry
+            </button>
+          </div>
+        </form>
+
+        <div
+          id="spinner"
+          class="hidden text-center py-4 text-xs text-slate-400 animate-pulse"
+        >
+          🤖 AI is analyzing tables and slide structures...
+        </div>
+
+        <div
+          id="resultsCard"
+          class="hidden space-y-3 pt-3 border-t border-slate-700"
+        >
+          <div class="flex justify-between items-center">
+            <label class="text-xs text-slate-400 font-semibold"
+              >Module Code & Freq:</label
+            >
+            <div class="flex space-x-2">
+              <input
+                type="text"
+                id="moduleInput"
+                placeholder="e.g. C240"
+                class="bg-slate-900 text-emerald-400 text-xs font-bold font-mono px-2 py-1 rounded border border-slate-700 w-20 text-center focus:outline-none focus:border-emerald-500"
+              />
+              <input
+                type="number"
+                id="freqInput"
+                value="3"
+                min="1"
+                max="30"
+                title="Reminder Frequency (Days)"
+                class="bg-slate-900 text-amber-400 text-xs font-bold font-mono px-2 py-1 rounded border border-slate-700 w-16 text-center focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+          </div>
+
+          <div id="assessmentsList" class="space-y-2"></div>
+
+          <button
+            type="button"
+            onclick="addAssessmentRow()"
+            class="w-full py-1.5 border border-dashed border-slate-600 text-slate-400 hover:text-slate-200 hover:border-slate-400 text-xs rounded-lg transition"
+          >
+            + Add Assessment Component
+          </button>
+          <button
+            type="button"
+            onclick="saveEditedSchedule()"
+            class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2 rounded-lg transition"
+          >
+            Confirm & Save Schedule
+          </button>
+        </div>
+
+        <div
+          id="statusMsg"
+          class="hidden text-center text-xs font-semibold py-1 text-emerald-400"
+        ></div>
+      </div>
+
+      <!-- TAB 2: GPA TRACKER & CALCULATOR -->
+      <div
+        id="tab-view-gpa"
+        class="hidden space-y-4 bg-slate-800 p-4 rounded-xl border border-slate-700"
+      >
+        <!-- CUMULATIVE GPA DISPLAY -->
+        <div
+          class="bg-slate-900 p-4 rounded-lg border border-slate-700 text-center space-y-1 relative"
+        >
+          <div class="flex justify-center items-center space-x-2">
+            <span
+              class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider"
+            >
+              CUMULATIVE GPA (CREDIT-WEIGHTED)
+            </span>
+            <button
+              onclick="manualRefreshGpa()"
+              class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-0.5 rounded border border-slate-700 transition"
+              title="Fetch latest from Google Sheets"
+            >
+              🔄 Sync
+            </button>
+          </div>
+
+          <div id="cumGpaDisplay" class="text-3xl font-black text-emerald-400">
+            0.000
+          </div>
+
+          <p class="text-[10px] text-slate-400">
+            Calculated using total grade points ÷ total credit units
+          </p>
+        </div>
+
+        <!-- VISUAL GPA PROGRESS GRAPH -->
+        <div
+          class="bg-slate-900 p-3 rounded-lg border border-slate-700 space-y-2"
+        >
+          <span
+            class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block"
+            >📈 Semester GPA Trend</span
+          >
+          <div class="w-full h-36">
+            <canvas id="gpaTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- CARDS HEADER WITH '+' BUTTON -->
+        <div class="flex justify-between items-center pt-1">
+          <h3 class="text-xs font-bold text-slate-300">Academic Years</h3>
+          <button
+            onclick="addYearCard()"
+            class="bg-emerald-600 hover:bg-emerald-500 text-white w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center transition shadow-md"
+            title="Add Academic Year"
+          >
+            +
+          </button>
+        </div>
+
+        <!-- DYNAMIC YEAR CARDS CONTAINER -->
+        <div id="cardsContainer" class="space-y-3"></div>
+
+        <!-- SAVE TO GSHEETS -->
+        <div class="pt-2">
+          <button
+            onclick="syncGpaToSheet()"
+            class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-xs transition shadow-md"
+          >
+            💾 Save GPA to Google Sheets
+          </button>
+        </div>
+
+        <div
+          id="gpaStatusNotice"
+          class="hidden text-center text-xs font-semibold py-1 text-emerald-400"
+        ></div>
+      </div>
+
+      <!-- TAB 3: GAMIFIED GOALS & CIRCULAR TIMER -->
+      <div
+        id="tab-view-goals"
+        class="hidden space-y-4 bg-slate-800 p-4 rounded-xl border border-slate-700"
+      >
+        <h2 class="text-sm font-bold text-slate-200">
+          ⚡ Productive Daily Goals
+        </h2>
+
+        <!-- CIRCULAR TIMER CONTAINER -->
+        <div
+          class="bg-slate-900 p-4 rounded-lg border border-slate-700 flex flex-col items-center space-y-3"
+        >
+          <div class="flex justify-between items-center w-full px-2">
+            <span
+              class="text-[10px] text-slate-400 block uppercase tracking-wider font-bold"
+              >Focus Timer</span
+            >
+            <select
+              id="timerDurationSelect"
+              onchange="changeTimerDuration()"
+              class="bg-slate-800 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded border border-slate-700 outline-none"
+            >
+              <option value="15">15m</option>
+              <option value="25" selected>25m</option>
+              <option value="45">45m</option>
+              <option value="60">60m</option>
+            </select>
+          </div>
+
+          <!-- SVG Circular Ring -->
+          <div class="relative flex items-center justify-center w-36 h-36">
+            <svg
+              class="w-full h-full transform -rotate-90"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="42"
+                class="stroke-slate-800"
+                stroke-width="8"
+                fill="none"
+              ></circle>
+              <circle
+                id="timerProgressRing"
+                cx="50"
+                cy="50"
+                r="42"
+                class="stroke-amber-400 transition-all duration-1000 linear"
+                stroke-width="8"
+                stroke-dasharray="264"
+                stroke-dashoffset="0"
+                stroke-linecap="round"
+                fill="none"
+              ></circle>
+            </svg>
+            <div
+              class="absolute inset-0 flex flex-col items-center justify-center"
+            >
+              <div
+                id="timer"
+                class="text-2xl font-mono font-extrabold text-amber-400"
+              >
+                25:00
+              </div>
+            </div>
+          </div>
+
+          <button
+            onclick="toggleTimer()"
+            id="tBtn"
+            class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-1.5 rounded-lg transition font-semibold shadow-md"
+          >
+            Start Timer
+          </button>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <span class="text-slate-400 font-bold block">Today's Checklist</span>
+          <div id="checklistContainer" class="space-y-2"></div>
+          <button
+            type="button"
+            onclick="openAddChecklistModal()"
+            class="w-full py-2 border border-dashed border-slate-600 text-slate-400 hover:text-emerald-400 hover:border-emerald-500 text-xs rounded-lg transition flex items-center justify-center space-x-1 font-bold"
+          >
+            <span>+ Add Task</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE CALCULATOR MODAL -->
+    <div
+      id="calcModal"
+      class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-slate-800 rounded-xl border border-slate-700 max-w-md w-full p-5 space-y-3 shadow-2xl"
+      >
+        <div
+          class="flex justify-between items-center border-b border-slate-700 pb-2"
+        >
+          <div>
+            <h3 class="text-xs font-bold text-emerald-400">
+              RP Module GPA Calculator
+            </h3>
+            <p id="modalSubTitle" class="text-[10px] text-slate-400 font-mono">
+              AY2026 - SEM1
+            </p>
+          </div>
+          <button
+            onclick="closeCalcModal()"
+            class="text-slate-400 hover:text-white font-bold text-xs"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div
+          class="flex space-x-2 text-[10px] text-slate-400 font-semibold uppercase tracking-wider px-1"
+        >
+          <span class="w-1/3">Module Code</span>
+          <span class="w-1/3">Grade</span>
+          <span class="w-1/4 text-center">Credits</span>
+          <span class="w-6"></span>
+        </div>
+
+        <div
+          id="modulesContainer"
+          class="space-y-2 max-h-56 overflow-y-auto pr-1"
+        ></div>
+
+        <button
+          onclick="addModuleRow()"
+          class="w-full py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-semibold transition"
+        >
+          + Add Module
+        </button>
+
+        <div
+          class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 text-center"
+        >
+          <span class="text-[10px] text-slate-400 block uppercase"
+            >Calculated Semester GPA</span
+          >
+          <span id="calcResult" class="text-lg font-bold text-emerald-400"
+            >0.000</span
+          >
+        </div>
+
+        <div class="flex space-x-2 pt-1">
+          <button
+            onclick="closeCalcModal()"
+            class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs py-2 rounded-lg transition font-semibold"
+          >
+            Cancel
+          </button>
+          <button
+            onclick="applyGpaToSemester()"
+            class="w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2 rounded-lg transition font-semibold"
+          >
+            Apply to Semester
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD CHECKLIST ITEM MODAL -->
+    <div
+      id="checklistModal"
+      class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-slate-800 rounded-xl border border-slate-700 max-w-xs w-full p-4 space-y-3 shadow-2xl"
+      >
+        <div
+          class="flex justify-between items-center border-b border-slate-700 pb-2"
+        >
+          <h3 class="text-xs font-bold text-emerald-400">Add New Task</h3>
+          <button
+            onclick="closeChecklistModal()"
+            class="text-slate-400 hover:text-white font-bold text-xs"
+          >
+            ✕
+          </button>
+        </div>
+        <input
+          type="text"
+          id="newChecklistItemText"
+          placeholder="Task description..."
+          class="w-full bg-slate-900 text-xs text-slate-200 p-2 rounded border border-slate-700 outline-none focus:border-emerald-500"
+        />
+        <div class="flex space-x-2">
+          <button
+            onclick="closeChecklistModal()"
+            class="w-1/2 bg-slate-700 text-slate-300 text-xs py-1.5 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onclick="confirmAddChecklistItem()"
+            class="w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 rounded font-semibold"
+          >
+            Add Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SCAN_URL =
+        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/scan-slides";
+      const SAVE_GPA_URL =
+        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/save-gpa";
+      const GET_GPA_URL =
+        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/get-gpa";
+      const SAVE_SCHEDULE_URL =
+        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/save-schedule";
+      const UPDATE_STREAK_URL =
+        "https://many-unwashed-cavalry.ngrok-free.dev/webhook/update-streak";
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const chatId = urlParams.get("chat_id") || "123456";
+
+      let yearCount = 2026;
+      let currentTargetBtn = null;
+      let semesterDataStore = {};
+      let gpaChartInstance = null;
+
+      // Circular Focus Timer State
+      let totalTime = 25 * 60;
+      let timeLeft = totalTime;
+      let timerInterval = null;
+      let isRunning = false;
+      const circumference = 2 * Math.PI * 42;
+
+      // Checklist State Data
+      let checklistItems = [
+        { id: 1, text: "Complete 1 Focus Session", done: false },
+        { id: 2, text: "Review Extracted AI Schedule", done: false },
+      ];
+
+      window.addEventListener("DOMContentLoaded", async function () {
+        initChart();
+        addYearCard("AY2026");
+        updateTimerDisplay();
+        renderChecklist();
+      });
+
+      function changeTimerDuration() {
+        const select = document.getElementById("timerDurationSelect");
+        const mins = parseInt(select.value);
+        totalTime = mins * 60;
+        resetTimer();
+      }
+
+      function toggleTimer() {
+        const btn = document.getElementById("tBtn");
+        if (!isRunning) {
+          isRunning = true;
+          document.getElementById("timerDurationSelect").disabled = true;
+          btn.innerText = "Pause Timer";
+          btn.className =
+            "bg-rose-600 hover:bg-rose-500 text-white text-xs px-4 py-1.5 rounded-lg transition font-semibold shadow-md";
+          timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+              timeLeft--;
+              updateTimerDisplay();
+            } else {
+              clearInterval(timerInterval);
+              isRunning = false;
+              document.getElementById("timerDurationSelect").disabled = false;
+              alert("Focus session complete! Great job!");
+              resetTimer();
+            }
+          }, 1000);
+        } else {
+          clearInterval(timerInterval);
+          isRunning = false;
+          document.getElementById("timerDurationSelect").disabled = false;
+          btn.innerText = "Resume Timer";
+          btn.className =
+            "bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-1.5 rounded-lg transition font-semibold shadow-md";
+        }
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        document.getElementById("timerDurationSelect").disabled = false;
+        timeLeft = totalTime;
+        updateTimerDisplay();
+        const btn = document.getElementById("tBtn");
+        btn.innerText = "Start Timer";
+        btn.className =
+          "bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-1.5 rounded-lg transition font-semibold shadow-md";
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").innerText =
+          String(minutes).padStart(2, "0") +
+          ":" +
+          String(seconds).padStart(2, "0");
+
+        const ring = document.getElementById("timerProgressRing");
+        const offset = circumference - (timeLeft / totalTime) * circumference;
+        ring.style.strokeDashoffset = offset;
+      }
+
+      // Checklist Render & Interactive Logic
+      function renderChecklist() {
+        const container = document.getElementById("checklistContainer");
+        container.innerHTML = "";
+
+        // Check if all tasks are completed
+        if (
+          checklistItems.length > 0 &&
+          checklistItems.every((item) => item.done)
+        ) {
+          syncStreakWithBackend();
+        }
+
+        checklistItems.forEach((item) => {
+          const card = document.createElement("div");
+          card.className =
+            "flex items-center justify-between bg-slate-900 p-2.5 rounded border border-slate-700";
+          card.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" ${item.done ? "checked" : ""} onchange="toggleChecklistItem(${item.id})" class="rounded bg-slate-800 border-slate-600 text-emerald-500 cursor-pointer">
+              <span class="${item.done ? "line-through text-slate-500" : "text-slate-300"}">${item.text}</span>
+            </div>
+            <button onclick="completeChecklistItem(${item.id})" class="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center hover:bg-emerald-500/20 transition" title="Mark Done & Clear">
+              <svg class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </button>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      async function syncStreakWithBackend() {
+        try {
+          const res = await fetch(UPDATE_STREAK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: chatId }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.streak !== undefined) {
+              document.getElementById("streakDisplay").innerText =
+                data.streak + " Days";
+            }
+          }
+        } catch (e) {
+          console.error("Streak sync error:", e);
+        }
+      }
+
+      function toggleChecklistItem(id) {
+        const item = checklistItems.find((i) => i.id === id);
+        if (item) item.done = !item.done;
+        renderChecklist();
+      }
+
+      function completeChecklistItem(id) {
+        checklistItems = checklistItems.filter((i) => i.id !== id);
+        renderChecklist();
+      }
+
+      function openAddChecklistModal() {
+        document.getElementById("newChecklistItemText").value = "";
+        document.getElementById("checklistModal").classList.remove("hidden");
+      }
+
+      function closeChecklistModal() {
+        document.getElementById("checklistModal").classList.add("hidden");
+      }
+
+      function confirmAddChecklistItem() {
+        const text = document
+          .getElementById("newChecklistItemText")
+          .value.trim();
+        if (text) {
+          checklistItems.push({ id: Date.now(), text: text, done: false });
+          renderChecklist();
+          closeChecklistModal();
+        }
+      }
+
+      // Toggle Manual Entry Mode
+      function toggleManualEntry() {
+        const resultsCard = document.getElementById("resultsCard");
+        resultsCard.classList.toggle("hidden");
+        const assessmentsList = document.getElementById("assessmentsList");
+        if (
+          !resultsCard.classList.contains("hidden") &&
+          assessmentsList.children.length === 0
+        ) {
+          addAssessmentRow("CA1 Quiz", "Week 6");
+          addAssessmentRow("CA2 Quiz", "Week 12");
+        }
+      }
+
+      async function saveEditedSchedule() {
+        const modCode = document.getElementById("moduleInput").value.trim();
+        const freqVal =
+          document.getElementById("freqInput").value.trim() || "3";
+        const msg = document.getElementById("statusMsg");
+
+        if (!modCode) {
+          alert("Please enter a module code.");
+          return;
+        }
+
+        const assessmentRows = document.querySelectorAll(
+          "#assessmentsList > div",
+        );
+        const assessments = [];
+        assessmentRows.forEach((row) => {
+          const title = row.querySelector(".ass-title").value.trim();
+          const week = row.querySelector(".ass-week").value.trim();
+          if (title) {
+            assessments.push({ name: title, date: week });
+          }
+        });
+
+        const payload = {
+          chat_id: chatId,
+          module: modCode,
+          freq: freqVal,
+          assessments: assessments,
+        };
+
+        msg.innerText = "⏳ Saving and sending schedule via Telegram...";
+        msg.classList.remove("hidden");
+
+        try {
+          const res = await fetch(SAVE_SCHEDULE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.ok) {
+            msg.innerText =
+              "✨ Schedule confirmed & Telegram notification sent!";
+            setTimeout(() => msg.classList.add("hidden"), 4000);
+          } else {
+            throw new Error("Failed to save");
+          }
+        } catch (e) {
+          console.error(e);
+          msg.innerText = "❌ Failed to send schedule notification.";
+        }
+      }
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const fileInput = document.getElementById("slideFile");
+          if (!fileInput.files.length) {
+            alert("Please select a file first or click Manual Entry!");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+
+          document.getElementById("spinner").classList.remove("hidden");
+          document.getElementById("resultsCard").classList.add("hidden");
+
+          try {
+            const response = await fetch(SCAN_URL, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) throw new Error("Failed to parse slides");
+
+            const result = await response.json();
+            document.getElementById("spinner").classList.add("hidden");
+            document.getElementById("resultsCard").classList.remove("hidden");
+
+            document.getElementById("moduleInput").value = result.module || "";
+
+            const assessmentsList = document.getElementById("assessmentsList");
+            assessmentsList.innerHTML = "";
+
+            if (result.assessments && Array.isArray(result.assessments)) {
+              result.assessments.forEach((item) => {
+                addAssessmentRow(item.name, item.date);
+              });
+            }
+          } catch (err) {
+            console.error(err);
+            document.getElementById("spinner").classList.add("hidden");
+            alert(
+              "Error analyzing slides via AI. You can use the Manual Entry button instead.",
+            );
+          }
+        });
+
+      async function manualRefreshGpa() {
+        const notice = document.getElementById("gpaStatusNotice");
+        notice.innerText = "⏳ Fetching GPA from Google Sheets...";
+        notice.classList.remove("hidden");
+
+        try {
+          const res = await fetch(GET_GPA_URL + "?chat_id=" + chatId);
+          if (!res.ok) throw new Error("Network response was not ok");
+
+          const data = await res.json();
+          let row = null;
+          if (Array.isArray(data)) {
+            row = data[0];
+          } else if (data && typeof data === "object") {
+            row = data.json || data;
+          }
+
+          const gpaVal = row
+            ? row.cumulative_gpa || row.json?.cumulative_gpa
+            : null;
+
+          if (
+            gpaVal !== null &&
+            gpaVal !== undefined &&
+            String(gpaVal).trim() !== ""
+          ) {
+            const parsedGpa = parseFloat(gpaVal);
+            if (!isNaN(parsedGpa)) {
+              document.getElementById("cumGpaDisplay").innerText =
+                parsedGpa.toFixed(3);
+              notice.innerText = "✨ Cumulative GPA synced successfully!";
+              setTimeout(() => notice.classList.add("hidden"), 3000);
+              return;
+            }
+          }
+
+          notice.innerText = "⚠️ No saved GPA found for this chat ID.";
+        } catch (e) {
+          console.log("Sync error:", e);
+          notice.innerText = "❌ Failed to sync with Google Sheets.";
+        }
+      }
+
+      function setTab(tab) {
+        ["parse", "gpa", "goals"].forEach(function (t) {
+          document.getElementById("tab-view-" + t).classList.add("hidden");
+          document.getElementById("btn-" + t).className =
+            "w-1/3 py-2 border-b-2 border-transparent text-slate-400";
+        });
+        document.getElementById("tab-view-" + tab).classList.remove("hidden");
+        document.getElementById("btn-" + tab).className =
+          "w-1/3 py-2 border-b-2 border-emerald-400 text-emerald-400 font-bold";
+      }
+
+      function initChart() {
+        const ctx = document.getElementById("gpaTrendChart").getContext("2d");
+        gpaChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Semester GPA",
+                data: [],
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.15)",
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: "#10b981",
+                pointRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                min: 0,
+                max: 4.0,
+                grid: { color: "rgba(51, 65, 85, 0.4)" },
+                ticks: { color: "#94a3b8", font: { size: 10 } },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#94a3b8", font: { size: 10 } },
+              },
+            },
+          },
+        });
+      }
+
+      function updateGpaChart() {
+        if (!gpaChartInstance) return;
+        const labels = [];
+        const dataPoints = [];
+        const cards = document.querySelectorAll(".year-card");
+        cards.forEach(function (card) {
+          const yearTitle =
+            card.querySelector(".acad-year-title").value.trim() || "AY";
+          const sem1Btn = card.querySelector(".sem1-btn");
+          const sem2Btn = card.querySelector(".sem2-btn");
+          const sem1Val = parseFloat(sem1Btn.getAttribute("data-gpa") || "0");
+          const sem2Val = parseFloat(sem2Btn.getAttribute("data-gpa") || "0");
+          if (sem1Val > 0) {
+            labels.push(yearTitle + "-S1");
+            dataPoints.push(sem1Val);
+          }
+          if (sem2Val > 0) {
+            labels.push(yearTitle + "-S2");
+            dataPoints.push(sem2Val);
+          }
+        });
+        gpaChartInstance.data.labels = labels;
+        gpaChartInstance.data.datasets[0].data = dataPoints;
+        gpaChartInstance.update();
+      }
+
+      function addYearCard(yearTitle) {
+        const title = yearTitle || "AY" + yearCount;
+        yearCount++;
+        const cardId =
+          "card_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
+        const container = document.getElementById("cardsContainer");
+        const cardHtml =
+          '<div id="' +
+          cardId +
+          '" class="year-card bg-slate-900 p-3.5 rounded-xl border border-slate-700 space-y-2.5 relative">' +
+          '<div class="flex justify-between items-center border-b border-slate-700 pb-1.5">' +
+          '<input type="text" value="' +
+          title +
+          '" oninput="updateGpaChart()" class="acad-year-title bg-slate-800 text-emerald-400 text-xs font-bold font-mono px-2 py-0.5 rounded border border-slate-700 w-24 outline-none focus:border-emerald-500" />' +
+          "<button onclick=\"removeYearCard('" +
+          cardId +
+          '\')" class="text-slate-500 hover:text-red-400 text-xs font-bold px-1">✕</button>' +
+          "</div>" +
+          '<div class="grid grid-cols-2 gap-2">' +
+          '<div class="space-y-1">' +
+          '<div class="flex justify-between items-center">' +
+          '<span class="text-[9px] text-slate-400 uppercase font-bold">SEM1</span>' +
+          '<button type="button" onclick="clearSemester(\'' +
+          cardId +
+          "', 'sem1')\" class=\"text-[10px] text-slate-500 hover:text-red-400 px-1 font-bold\">✕ Clear</button>" +
+          "</div>" +
+          '<button type="button" onclick="openCalcForSemester(\'' +
+          cardId +
+          '\', \'sem1\', this)" class="sem-btn sem1-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 font-mono text-xs font-bold p-2 rounded-lg w-full text-center transition flex justify-between items-center px-3" data-gpa="0.000">' +
+          '<span class="btn-text">+ Add GPA</span>' +
+          '<span class="text-[9px] text-emerald-400 font-sans">✏️ Edit</span>' +
+          "</button>" +
+          "</div>" +
+          '<div class="space-y-1">' +
+          '<div class="flex justify-between items-center">' +
+          '<span class="text-[9px] text-slate-400 uppercase font-bold">SEM2</span>' +
+          '<button type="button" onclick="clearSemester(\'' +
+          cardId +
+          "', 'sem2')\" class=\"text-[10px] text-slate-500 hover:text-red-400 px-1 font-bold\">✕ Clear</button>" +
+          "</div>" +
+          '<button type="button" onclick="openCalcForSemester(\'' +
+          cardId +
+          '\', \'sem2\', this)" class="sem-btn sem2-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 font-mono text-xs font-bold p-2 rounded-lg w-full text-center transition flex justify-between items-center px-3" data-gpa="0.000">' +
+          '<span class="btn-text">+ Add GPA</span>' +
+          '<span class="text-[9px] text-emerald-400 font-sans">✏️ Edit</span>' +
+          "</button>" +
+          "</div>" +
+          "</div>" +
+          "</div>";
+        container.insertAdjacentHTML("beforeend", cardHtml);
+        updateGpaChart();
+      }
+
+      function removeYearCard(cardId) {
+        delete semesterDataStore[cardId + "_sem1"];
+        delete semesterDataStore[cardId + "_sem2"];
+        document.getElementById(cardId).remove();
+        recalculateCumulative();
+      }
+
+      function clearSemester(cardId, semKey) {
+        delete semesterDataStore[cardId + "_" + semKey];
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        const btn = card.querySelector("." + semKey + "-btn");
+        if (btn) {
+          btn.setAttribute("data-gpa", "0.000");
+          const btnText = btn.querySelector(".btn-text");
+          if (btnText) btnText.innerText = "+ Add GPA";
+          else btn.innerText = "+ Add GPA";
+          btn.classList.remove("text-slate-100");
+          btn.classList.add("text-slate-400");
+        }
+        recalculateCumulative();
+      }
+
+      function recalculateCumulative() {
+        let totalGradePoints = 0;
+        let totalCredits = 0;
+        Object.values(semesterDataStore).forEach(function (modules) {
+          if (Array.isArray(modules)) {
+            modules.forEach(function (mod) {
+              const gradePoint = parseFloat(mod.grade || 0);
+              const cu = parseFloat(mod.cu || 0);
+              if (!isNaN(cu) && cu > 0) {
+                totalGradePoints += gradePoint * cu;
+                totalCredits += cu;
+              }
+            });
+          }
+        });
+        const cumGpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
+        document.getElementById("cumGpaDisplay").innerText = cumGpa.toFixed(3);
+        updateGpaChart();
+      }
+
+      async function syncGpaToSheet() {
+        const cumGpaVal = document.getElementById("cumGpaDisplay").innerText;
+        const payload = {
+          chat_id: chatId,
+          cumulative_gpa: cumGpaVal,
+        };
+
+        try {
+          const res = await fetch(SAVE_GPA_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (res.ok) {
+            const msg = document.getElementById("gpaStatusNotice");
+            msg.innerText = "✨ Cumulative GPA saved successfully!";
+            msg.classList.remove("hidden");
+            setTimeout(() => msg.classList.add("hidden"), 3000);
+          }
+        } catch (e) {
+          alert("Failed to connect to save-gpa webhook.");
+        }
+      }
+
+      function openCalcForSemester(cardId, semKey, btnElement) {
+        currentTargetBtn = btnElement;
+        const storeKey = cardId + "_" + semKey;
+        const card = document.getElementById(cardId);
+        const yearTitle = card.querySelector(".acad-year-title").value;
+        document.getElementById("modalSubTitle").innerText =
+          yearTitle + " - " + semKey.toUpperCase();
+        document.getElementById("calcModal").classList.remove("hidden");
+        const container = document.getElementById("modulesContainer");
+        container.innerHTML = "";
+
+        if (
+          semesterDataStore[storeKey] &&
+          semesterDataStore[storeKey].length > 0
+        ) {
+          semesterDataStore[storeKey].forEach(function (mod) {
+            addModuleRow(mod.name, mod.grade, mod.cu);
+          });
+        } else if (semKey === "sem1") {
+          addModuleRow("c227", "4.0", 4);
+          addModuleRow("e123", "3.0", 2);
+          addModuleRow("c110", "4.0", 4);
+          addModuleRow("c112", "2.5", 2);
+        } else {
+          addModuleRow("", "4.0", 4);
+        }
+        calculateGPA();
+      }
+
+      function closeCalcModal() {
+        document.getElementById("calcModal").classList.add("hidden");
+        currentTargetBtn = null;
+      }
+
+      function addModuleRow(modName, initialGrade, initialCu) {
+        const mName = modName || "";
+        const iGrade = initialGrade || "4.0";
+        const iCu = initialCu || 4;
+        const container = document.getElementById("modulesContainer");
+        const row = document.createElement("div");
+        row.className = "mod-row flex space-x-2 items-center";
+        row.innerHTML =
+          '<input type="text" value="' +
+          mName +
+          '" placeholder="Module" class="mod-name bg-slate-900 text-xs p-1.5 rounded border border-slate-700 text-slate-300 w-1/3 outline-none focus:border-emerald-500" />' +
+          '<select onchange="calculateGPA()" class="mod-grade bg-slate-900 text-xs p-1.5 rounded border border-slate-700 text-emerald-400 w-1/3 outline-none focus:border-emerald-500">' +
+          '<option value="4.0" ' +
+          (iGrade === "4.0" ? "selected" : "") +
+          ">A (4.0)</option>" +
+          '<option value="3.5" ' +
+          (iGrade === "3.5" ? "selected" : "") +
+          ">B+ (3.5)</option>" +
+          '<option value="3.0" ' +
+          (iGrade === "3.0" ? "selected" : "") +
+          ">B (3.0)</option>" +
+          '<option value="2.5" ' +
+          (iGrade === "2.5" ? "selected" : "") +
+          ">C+ (2.5)</option>" +
+          '<option value="2.0" ' +
+          (iGrade === "2.0" ? "selected" : "") +
+          ">C (2.0)</option>" +
+          '<option value="1.5" ' +
+          (iGrade === "1.5" ? "selected" : "") +
+          ">D+ (1.5)</option>" +
+          '<option value="1.0" ' +
+          (iGrade === "1.0" ? "selected" : "") +
+          ">D (1.0)</option>" +
+          '<option value="0.0" ' +
+          (iGrade === "0.0" ? "selected" : "") +
+          ">F (0.0)</option>" +
+          "</select>" +
+          '<input type="number" oninput="calculateGPA()" value="' +
+          iCu +
+          '" min="1" max="20" class="mod-cu bg-slate-900 text-xs p-1.5 rounded border border-slate-700 text-slate-300 w-1/4 text-center outline-none focus:border-emerald-500" />' +
+          '<button onclick="this.parentElement.remove(); calculateGPA();" class="text-slate-500 hover:text-red-400 font-bold px-1 text-xs">✕</button>';
+        container.appendChild(row);
+        calculateGPA();
+      }
+
+      function addAssessmentRow(title = "", week = "") {
+        const container = document.getElementById("assessmentsList");
+        const row = document.createElement("div");
+        row.className = "flex space-x-2 items-center";
+        row.innerHTML = `
+        <input type="text" value="${title}" placeholder="Assessment" class="ass-title bg-slate-900 text-xs p-1.5 rounded border border-slate-700 text-slate-300 w-1/2 outline-none focus:border-emerald-500" />
+        <input type="text" value="${week}" placeholder="Week/Date" class="ass-week bg-slate-900 text-xs p-1.5 rounded border border-slate-700 text-slate-300 w-1/2 outline-none focus:border-emerald-500" />
+        <button type="button" onclick="this.parentElement.remove()" class="text-slate-500 hover:text-red-400 font-bold px-1 text-xs">✕</button>
+      `;
+        container.appendChild(row);
+      }
+
+      function calculateGPA() {
+        const grades = document.querySelectorAll(".mod-grade");
+        const cus = document.querySelectorAll(".mod-cu");
+        let totalPoints = 0;
+        let totalCUs = 0;
+        for (let i = 0; i < grades.length; i++) {
+          let gradePoint = parseFloat(grades[i].value);
+          let cu = parseFloat(cus[i].value);
+          if (!isNaN(cu) && cu > 0) {
+            totalPoints += gradePoint * cu;
+            totalCUs += cu;
+          }
+        }
+        const finalGPA = totalCUs > 0 ? totalPoints / totalCUs : 0.0;
+        document.getElementById("calcResult").innerText = finalGPA.toFixed(3);
+        return finalGPA.toFixed(3);
+      }
+
+      function applyGpaToSemester() {
+        if (!currentTargetBtn) return;
+        const calculatedGpa = calculateGPA();
+        const cardId = currentTargetBtn.closest(".year-card").id;
+        const semKey = currentTargetBtn.classList.contains("sem1-btn")
+          ? "sem1"
+          : "sem2";
+        const storeKey = cardId + "_" + semKey;
+        const modRows = document.querySelectorAll(".mod-row");
+        const modulesSaved = [];
+        modRows.forEach(function (row) {
+          modulesSaved.push({
+            name: row.querySelector(".mod-name").value,
+            grade: row.querySelector(".mod-grade").value,
+            cu: row.querySelector(".mod-cu").value,
+          });
+        });
+        semesterDataStore[storeKey] = modulesSaved;
+        currentTargetBtn.setAttribute("data-gpa", calculatedGpa);
+        const btnText = currentTargetBtn.querySelector(".btn-text");
+        if (btnText) btnText.innerText = calculatedGpa;
+        else currentTargetBtn.innerText = calculatedGpa;
+        currentTargetBtn.classList.remove("text-slate-400");
+        currentTargetBtn.classList.add("text-slate-100");
+        recalculateCumulative();
+        closeCalcModal();
+      }
+    </script>
+  </body>
+</html>
